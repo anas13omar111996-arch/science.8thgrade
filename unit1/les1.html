@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - الدرس الثاني: التكاثر</title>
+  <style>
+    :root {
+      --primary: #2b5c8f;
+      --success: #2e7d32;
+      --error: #c62828;
+      --bg: #f4f7f6;
+      --card-bg: #ffffff;
+      --text: #333333;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .quiz-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 680px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .quiz-header {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .badge-visual { background: #e3f2fd; color: #1565c0; }
+    .badge-logical { background: #f3e5f5; color: #7b1fa2; }
+    .badge-practical { background: #e8f5e9; color: #2e7d32; }
+
+    .question {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      padding: 14px 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1rem;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      background: #eef5fc;
+      border-color: var(--primary);
+    }
+
+    .option-btn.correct {
+      background-color: #d4edda !important;
+      border-color: var(--success) !important;
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    .option-btn.incorrect {
+      background-color: #f8d7da !important;
+      border-color: var(--error) !important;
+      color: var(--error);
+    }
+
+    .feedback {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback.visible { display: block; }
+    .feedback.correct-fb { background-color: #e8f5e9; color: var(--success); border: 1px solid #a5d6a7; }
+    .feedback.incorrect-fb { background-color: #ffebee; color: var(--error); border: 1px solid #ef9a9a; }
+
+    .controls {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 28px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    .result-container {
+      text-align: center;
+      display: none;
+    }
+
+    .score {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div id="quiz-screen">
+    <div class="quiz-header">
+      <span id="style-badge" class="badge"></span>
+      <div id="progress" style="font-weight: bold; color: #666;"></div>
+    </div>
+    
+    <div id="question-text" class="question"></div>
+    <div id="options-container" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+
+    <div class="controls">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <div id="result-screen" class="result-container">
+    <h2>انتهى اختبار الدرس الثاني!</h2>
+    <p>درجتك النهائية هي:</p>
+    <div id="final-score" class="score"></div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة الدرس الثاني: التكاثر (الصف الثامن)
+  const questions = [
+    {
+      question: "يتكاثر نبات الفراولة خضرياً عن طريق ساق رفيعة تمتد على سطح الأرض تُسمى:",
+      options: ["الرايزوم", "الساق الجارية", "البصلة", "الدرنة"],
+      correct: 1,
+      style: "نمط بصري / مستوى أساسي",
+      badgeClass: "badge-visual",
+      explanation: "إجابة صحيحة! يتكاثر نبات الفراولة بوساطة الساق الجارية التي تمتد على سطح الأرض وتنمو من عقدها سيقان وجذور جديدة."
+    },
+    {
+      question: "تتكاثر دودة البلاناريا لاجنسياً عن طريق التبرعم، بينما تتكاثر الهيدرا عن طريق التجزؤ. (صواب / خطأ)",
+      options: ["صواب", "خطأ"],
+      correct: 1,
+      style: "نمط تحليلي / مستوى متوسط",
+      badgeClass: "badge-logical",
+      explanation: "إجابة خاطئة (العبارة معكوسة)! البلاناريا تتكاثر بالتجزؤ، بينما الهيدرا تتكاثر بالتبرعم."
+    },
+    {
+      question: "يتكون عضو التأنيث (الكربلة) في أزهار النباتات مغطاة البذور من ثلاثة أجزاء، هي:",
+      options: ["الخيط والمُتك وحبوب اللقاح", "الميسم والقلم والمبيض", "المخروط الذكري والأنثوي والشريط", "البذرة والجنين والسبلة"],
+      correct: 1,
+      style: "نمط بصري / مستوى متوسط",
+      badgeClass: "badge-visual",
+      explanation: "إجابة صحيحة! الكربلة هي عضو التأنيث وتتكون من الميسم وقلم ومبيض تحوي بداخلها البويضات."
+    },
+    {
+      question: "يرغب مزارع في إنتاج أعداد كبيرة جداً من نبات النعنع في وقت قصير وبنفس الصفات الوراثية، الطريقة الأنسب هي:",
+      options: ["التكاثر الجنسي باستخدام البذور", "التكاثر الخضري باستخدام الرايزومات", "الإخصاب الخارجي", "الاعتماد على حشرات التلقيح"],
+      correct: 1,
+      style: "نمط عملي - تطبيقي / مستوى متوسط",
+      badgeClass: "badge-practical",
+      explanation: "إجابة صحيحة! التكاثر الخضري (اللاجنسي) بالرايزومات يتيح إنتاج أفراد كثيرة ومماثلة تماماً للآباء وبسرعة."
+    },
+    {
+      question: "يحتوي الزيجوت (البويضة المخصبة) على ثنائية المجموعة الكروموسومية (2n) نتيجة اندماج جاميت ذكري (1n) مع جاميت أنثوي (1n). (صواب / خطأ)",
+      options: ["صواب", "خطأ"],
+      correct: 0,
+      style: "نمط تحليلي / مستوى متوسط",
+      badgeClass: "badge-logical",
+      explanation: "إجابة صحيحة! الإخصاب يدمج نواة الجاميت الذكري (1n) بنواة الجاميت الأنثوي (1n) لتتشكل البويضة المخصبة الزيجوت (2n)."
+    },
+    {
+      question: "التركيب المسؤول عن التكاثر الجنسي في النباتات معراة البذور (مثل الصنوبر) هو:",
+      options: ["الزهرة", "المخروط", "الساق الجارية", "الكربلة"],
+      correct: 1,
+      style: "نمط بصري / مستوى أساسي",
+      badgeClass: "badge-visual",
+      explanation: "إجابة صحيحة! المخاريط (الذكرية والأنثوية) هي التراكيب المسؤولة عن التكاثر الجنسي في معراة البذور."
+    },
+    {
+      question: "تسمى عملية انتقال حبوب اللقاح من عضو التذكير (المُتك) إلى عضو التأنيث (الميسم) بـ:",
+      options: ["الإخصاب", "التلقيح", "التبرعم", "الانشطار"],
+      correct: 1,
+      style: "نمط لفظي / مستوى أساسي",
+      badgeClass: "badge-logical",
+      explanation: "إجابة صحيحة! التلقيح (Pollination) هو انتقال حبوب اللقاح إلى الميسم، أما الإخصاب فهو اندماج الأنوية."
+    },
+    {
+      question: "الميزة الأساسية للتكاثر الجنسي التي تجعله يتفوق على التكاثر اللاجنسي في التكيف مع التغيرات البيئية هي:",
+      options: ["سرعة إنتاج الأفراد", "الحفاظ على نفس الصفات دون تغيير", "إنتاج تنوع في الصفات الوراثية للأبناء", "عدم الحاجة ل وجود ذكر وأنثى"],
+      correct: 2,
+      style: "نمط تحليلي / مستوى متقدم",
+      badgeClass: "badge-logical",
+      explanation: "إجابة صحيحة! ينتج التكاثر الجنسي أفراداً تحمل مادة وراثية خليطاً بين الأبوين، مما يوجد تنوعاً وراثياً يساعد على البقاء."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    document.getElementById("style-badge").className = `badge ${q.badgeClass}`;
+    document.getElementById("style-badge").innerText = q.style;
+    document.getElementById("progress").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    document.getElementById("question-text").innerText = q.question;
+    
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback");
+    feedback.className = "feedback";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function selectOption(selectedIdx) {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.classList.add("visible", "correct-fb");
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.classList.add("visible", "incorrect-fb");
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
