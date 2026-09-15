@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - الدرس الثالث: الوراثة</title>
+  <style>
+    :root {
+      --primary: #2b5c8f;
+      --success: #2e7d32;
+      --error: #c62828;
+      --bg: #f4f7f6;
+      --card-bg: #ffffff;
+      --text: #333333;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .quiz-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 680px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .quiz-header {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .badge-visual { background: #e3f2fd; color: #1565c0; }
+    .badge-logical { background: #f3e5f5; color: #7b1fa2; }
+    .badge-practical { background: #e8f5e9; color: #2e7d32; }
+
+    .question {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      padding: 14px 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1rem;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      background: #eef5fc;
+      border-color: var(--primary);
+    }
+
+    .option-btn.correct {
+      background-color: #d4edda !important;
+      border-color: var(--success) !important;
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    .option-btn.incorrect {
+      background-color: #f8d7da !important;
+      border-color: var(--error) !important;
+      color: var(--error);
+    }
+
+    .feedback {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback.visible { display: block; }
+    .feedback.correct-fb { background-color: #e8f5e9; color: var(--success); border: 1px solid #a5d6a7; }
+    .feedback.incorrect-fb { background-color: #ffebee; color: var(--error); border: 1px solid #ef9a9a; }
+
+    .controls {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 28px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    .result-container {
+      text-align: center;
+      display: none;
+    }
+
+    .score {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div id="quiz-screen">
+    <div class="quiz-header">
+      <span id="style-badge" class="badge"></span>
+      <div id="progress" style="font-weight: bold; color: #666;"></div>
+    </div>
+    
+    <div id="question-text" class="question"></div>
+    <div id="options-container" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+
+    <div class="controls">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <div id="result-screen" class="result-container">
+    <h2>انتهى اختبار الدرس الثالث!</h2>
+    <p>درجتك النهائية هي:</p>
+    <div id="final-score" class="score"></div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة الدرس الثالث: الوراثة (الصف الثامن)
+  const questions = [
+    {
+      question: "في تجارب مندل، عند لقاح نبات أصفر القرون مع آخر أخضر القرون (كلاهما نقي السلالة)، ظهرت أفراد الجيل الأول جميعها خضراء القرون. تسمى صفة لون القرون الخضراء بـ:",
+      options: ["الصفة المتنحية", "الصفة السائدة", "الصفة غير المتماثلة", "السيادة المشتركة"],
+      correct: 1,
+      style: "نمط بصري / مستوى أساسي",
+      badgeClass: "badge-visual",
+      explanation: "إجابة صحيحة! الصفة السائدة هي الصفة التي تظهر في أفراد الجيل الأول جميعها وتمنع ظهور الصفة الثانية."
+    },
+    {
+      question: "الصفة التي يُعبر عنها بأليلين متماثلين مثل (TT) أو (tt) تُسمى صفة متماثلة الأليلات (نقية). (صواب / خطأ)",
+      options: ["صواب", "خطأ"],
+      correct: 0,
+      style: "نمط تحليلي / مستوى متوسط",
+      badgeClass: "badge-logical",
+      explanation: "إجابة صحيحة! عندما يتطابق الأليلان تكون الصفة متماثلة الأليلات (Homozygous Trait) وتكون نقية سواء كانت سائدة أو متنحية."
+    },
+    {
+      question: "مخطط يُستخدم لتوقع الطرز الجينية والشكلية المحتملة للأفراد الناتجة من تزاوج ما يُعرف بـ:",
+      options: ["مخطط التلقيح الخلطي", "مربع بانيت", "الانقسام المنصف", "السلسلة الوراثية"],
+      correct: 1,
+      style: "نمط لفظي / مستوى أساسي",
+      badgeClass: "badge-visual",
+      explanation: "إجابة صحيحة! مربع بانيت (Punnett Square) هو المخطط الأداة المستخدم لتسهيل حل مسائل الوراثة وتوقع الطرز الجينية."
+    },
+    {
+      question: "عند إجراء تلقيح بين نبات بازيلاء أرجواني الأزهار غير متماثل الأليلات (Rr) ونبات أبيض الأزهار (rr)، فإن الطرز الجينية المتوقعة للأبناء هي:",
+      options: ["جميعها Rr", "50% Rr : 50% rr", "75% RR : 25% rr", "جميعها rr"],
+      correct: 1,
+      style: "نمط تحليلي - تطبيق رياضي / مستوى متوسط",
+      badgeClass: "badge-practical",
+      explanation: "إجابة صحيحة! الأب الأول ينتج جاميتات (R, r) والثاني ينتج (r)، وعند الدمج تنتج النسبة 50% Rr (أرجواني) و 50% rr (أبيض)."
+    },
+    {
+      question: "عند اجماع أليل الأزهار الحمراء (R) مع أليل الأزهار البيضاء (W) في نبات فم السمكة وتنتج أزهار وردية اللون (صفة وسطية)، فإن نمط الوراثة هنا هو:",
+      options: ["السيادة التامة", "السيادة غير التامة", "السيادة المشتركة", "التلقيح الذاتي"],
+      correct: 1,
+      style: "نمط تحليلي / مستوى متوسط",
+      badgeClass: "badge-logical",
+      explanation: "إجابة صحيحة! السيادة غير التامة (Incomplete Dominance) يظهر فيها أثر الأليلين معاً في الطراز الجيني غير متماثل الأليلات بصفة وسطية."
+    },
+    {
+      question: "تُعبر ظهور أزهار باللون الأبيض الموشح بالأحمر في نبات الكاميليا نتيجة اجتماع أليلي اللون الأحمروالأبيض معاً دون ظهور صفة وسطية عن نمط:",
+      options: ["السيادة التامة", "السيادة غير التامة", "السيادة المشتركة", "الصفة المتنحية"],
+      correct: 2,
+      style: "نمط بصري / مستوى متوسط",
+      badgeClass: "badge-visual",
+      explanation: "إجابة صحيحة! السيادة المشتركة (Codominance) تعبر عن مساهمة كلا الأليلين معاً في ظهور الطراز الشكلي دون اختلاطهما بصفة وسطية."
+    },
+    {
+      question: "التلقيح الخلطي هو انتقال حبوب اللقاح من متك زهرة إلى ميسم نفس الزهرة أو زهرة أخرى في النبتة ذاتها. (صواب / خطأ)",
+      options: ["صواب", "خطأ"],
+      correct: 1,
+      style: "نمط تحليلي / مستوى متوسط",
+      badgeClass: "badge-logical",
+      explanation: "إجابة خاطئة! هذا التعريف ينطبق على 'التلقيح الذاتي'. بينما التلقيح الخلطي يكون بانتقال حبوب اللقاح إلى ميسم زهرة في نبتة أخرى من النوع نفسه."
+    },
+    {
+      question: "في نمط السيادة التامة، عند إجراء تلقيح ذاتي لأفراد الجيل الأول غير متماثلة الأليلات (Rr)، تكون نسبة الطرز الشكلية في الجيل الثاني هي:",
+      options: ["1 سائد : 1 متنحٍ", "3 سائد : 1 متنحٍ", "جميعها سائدة", "جميعها متنحية"],
+      correct: 1,
+      style: "نمط تحليلي / مستوى متقدم",
+      badgeClass: "badge-logical",
+      explanation: "إجابة صحيحة! ناتج التزاوج الذاتي (Rr × Rr) يعطي طرز جينية بنسبة (1RR : 2Rr : 1rr)، وهي تعادل شكلياً (3 سائد : 1 متنحٍ)."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    document.getElementById("style-badge").className = `badge ${q.badgeClass}`;
+    document.getElementById("style-badge").innerText = q.style;
+    document.getElementById("progress").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    document.getElementById("question-text").innerText = q.question;
+    
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback");
+    feedback.className = "feedback";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function selectOption(selectedIdx) {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.classList.add("visible", "correct-fb");
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.classList.add("visible", "incorrect-fb");
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
