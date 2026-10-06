@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - تركيب الذرة والتوزيع الإلكتروني (15 سؤالاً)</title>
+  <style>
+    :root {
+      --primary-blue: #1d4ed8;
+      --light-blue: #0284c7;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --success-text: #15803d;
+      --error-bg: #fee2e2;
+      --error-border: #ef4444;
+      --error-text: #b91c1c;
+      --timer-bg: #fff7ed;
+      --timer-border: #fed7aa;
+      --timer-text: #c2410c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 720px;
+      padding: 35px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Header Styling */
+    .header-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .teacher-badge {
+      display: inline-block;
+      background-color: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 20px 0 25px 0;
+    }
+
+    /* Timer & Progress Bar Row */
+    .top-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .timer-badge {
+      background-color: var(--timer-bg);
+      border: 1px solid var(--timer-border);
+      color: var(--timer-text);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .progress-container {
+      flex-grow: 1;
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--light-blue);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question & Options */
+    .question-meta {
+      color: var(--light-blue);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 22px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: right;
+      padding: 14px 20px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      background-color: #ffffff;
+      font-size: 1rem;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--light-blue);
+      background-color: #f0f9ff;
+    }
+
+    .option-btn.correct {
+      background-color: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+      font-weight: 700;
+    }
+
+    .option-btn.incorrect {
+      background-color: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+    }
+
+    /* Feedback & Controls */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.visible { display: block; }
+    .feedback-box.correct-fb { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+    .feedback-box.incorrect-fb { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+
+    .controls-row {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 30px;
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Results Screen */
+    .results-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+
+    .score-display {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <!-- Header -->
+  <div class="header-section">
+    <h1 class="quiz-title">اختبار العلوم التفاعلي ⚛️</h1>
+    <div class="quiz-subtitle">درس تركيب الذرة والتوزيع الإلكتروني (الصف الثامن)</div>
+    <div class="teacher-badge">إعداد: الأستاذ أنس المزرعاوي</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen">
+    <div class="top-status-bar">
+      <div class="timer-badge">
+        ⏱️ <span id="timer-text">30</span> ثانية
+      </div>
+      <div class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="question-meta" class="question-meta">السؤال 1 من 15</div>
+    <div id="question-text" class="question-text"></div>
+    <div id="options-container" class="options-list"></div>
+    <div id="feedback-box" class="feedback-box"></div>
+
+    <div class="controls-row">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="results-screen">
+    <h2>أحسنت! انتهى الاختبار</h2>
+    <p>نتيجتك النهائية هي:</p>
+    <div id="final-score" class="score-display">0 / 15</div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة درس تركيب الذرة والتوزيع الإلكتروني للصف الثامن (15 سؤالاً)
+  const questions = [
+    {
+      question: "أصغر جزء في العنصر، ولا يمكن تقسيمه بالطرائق الفيزيائية والكيميائية البسيطة يُعرف بـ:",
+      options: ["المركب", "الذرة", "الجزيء", "المخلوط"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الذرة هي أصغر وحدة بنائية تجعل العنصر يحتفظ بخصائصه الفريدة."
+    },
+    {
+      question: "توجد البروتونات والنيوترونات داخل نواة الذرة، بينما تدور الإلكترونات في:",
+      options: ["داخل النواة مع البروتونات", "مستويات الطاقة المحيطة بالنواة", "بين البروتونات والنيوترونات", "مركز الذرة فقط"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تدور الإلكترونات سالبة الشحنة في الفراغ المحيط بالنواة ضمن مستويات طاقة محددة."
+    },
+    {
+      question: "أيُّ الجسيمات التالية تمتلك شحنة كهربائية موجبة وتوجد داخل نواة الذرة؟",
+      options: ["الإلكترونات", "النيوترونات", "البروتونات", "الأيونات"],
+      correct: 2,
+      explanation: "إجابة صحيحة! البروتونات (+p) جسيمات موجبة الشحنة تقع داخل النواة."
+    },
+    {
+      question: "تكون الذرة متعادلة كهربائياً عندما يتساوى فيها عدد:",
+      options: ["البروتونات والنيوترونات", "البروتونات والإلكترونات", "النيوترونات والإلكترونات", "مستويات الطاقة والبروتونات"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تتساوى الشحنات الموجبة (البروتونات) مع الشحنات السالبة (الإلكترونات) فتصبح الذرة متعادلة."
+    },
+    {
+      question: "تُعد كتلة الإلكترونات متناهية في الصغر ومستصغرة مقارنة بكتلة كل من البروتونات والنيوترونات. (صواب / خطأ)",
+      options: ["صواب", "خطأ"],
+      correct: 0,
+      explanation: "إجابة صحيحة! كتلة الإلكترون صغيرة جداً (حوالي 1/1840 من كتلة البروتون) ولذلك تتركز كتلة الذرة في النواة."
+    },
+    {
+      question: "يُعبر 'العدد الذري' لأي عنصر كيميائي عن عدد:",
+      options: ["النيوترونات فقط", "مجموع البروتونات والنيوترونات", "البروتونات في نواة الذرة", "الإلكترونات في المستوى الأخير فقط"],
+      correct: 2,
+      explanation: "إجابة صحيحة! العدد الذري يمثل عدد البروتونات الموجبة في النواة وهو صفة مميزة لكل عنصر."
+    },
+    {
+      question: "إذا احتوت نواة ذرة عنصر على 11 بروتوناً و 12 نيوتروناً، فإن العدد الكتلي لهذا العنصر يساوي:",
+      options: ["11", "12", "23", "1"],
+      correct: 2,
+      explanation: "إجابة صحيحة! العدد الكتلي = عدد البروتونات + عدد النيوترونات (11 + 12 = 23)."
+    },
+    {
+      question: "عند كتابة رمز العنصر الكيميائي، يوضع العدد الكتلي عادةً في جهة:",
+      options: ["أسفل يسار الرمز", "أعلى يسار الرمز", "أسفل يمين الرمز", "أعلى يمين الرمز"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يُكتب العدد الكتلي أعلى يسار الرمز والعدد الذري أسفل يسار الرمز."
+    },
+    {
+      question: "ذرات للعنصر نفسه تتفق في العدد الذري وتختلف في عدد النيوترونات يُطلق عليها اسم:",
+      options: ["الأيونات", "النظائر", "الجزيئات", "المجموعات"],
+      correct: 1,
+      explanation: "إجابة صحيحة! النظائر هي ذرات العنصر نفسه التي تمتلك عدد البروتونات نفسه وتختلف في عدد النيوترونات."
+    },
+    {
+      question: "يُستخدم نظير الكربون المشع (الكربون-14) في التطبيقات العملية بشكل رئيسي لـ:",
+      options: ["توليد الطاقة الكهربائية", "تحديد العمر التقريبي للأحافير والآثار القديمة", "قياس كتلة الإلكترونات", "معالجة المياه"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يُستفاد من نظير الكربون-14 لتأاريخ العينات والأحافير القديمة."
+    },
+    {
+      question: "السعة القصوى لعدد الإلكترونات التي يتسع لها مستوى الطاقة الأول (n₁) القريب من النواة هي:",
+      options: ["2 إلكترون", "8 إلكترونات", "18 إلكترون", "32 إلكترون"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يمتلئ مستوى الطاقة الأول بحد أقصى قدره 2 إلكترون."
+    },
+    {
+      question: "الحد الأقصى لعدد الإلكترونات الذي يتسع له مستوى الطاقة الثاني (n₂) هو 8 إلكترونات. (صواب / خطأ)",
+      options: ["صواب", "خطأ"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يتسع مستوى الطاقة الثاني لـ 8 إلكترونات كحد أقصى."
+    },
+    {
+      question: "التوزيع الإلكتروني الصحيح لذرة عنصر الصوديوم (Na) التي عددها الذري 11 هو:",
+      options: ["2, 8, 1", "2, 9", "8, 2, 1", "3, 8"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يتسع المستوى الأول لـ 2، والثاني لـ 8، ويبقى إلكترون واحد في المستوى الثالث."
+    },
+    {
+      question: "ذرة عنصر يحتوي مستواها الأول على 2 إلكترون ومستواها الثاني على 6 إلكترونات (مثل الأكسجين)، يكون عددها الذري يساوي:",
+      options: ["6", "8", "10", "16"],
+      correct: 1,
+      explanation: "إجابة صحيحة! مجموع الإلكترونات = 2 + 6 = 8، وبما أنها ذرة متعادلة فإن عددها الذري يساوي 8."
+    },
+    {
+      question: "جهاز مختبري دقيق يُستخدم لقياس تراكيز عناصر النيتروجين والكربون والكبريت في المواد الغذائية والتركيبات:",
+      options: ["المجهر الضوئي", "جهاز المطياف الذري", "المحرار المئوي", "مقياس الضغط"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تُستخدم المطيافية الذرية في المختبرات للتحليل الكيميائي الدقيق وقياس التراكيز."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let timerInterval;
+  const QUESTION_TIME = 30;
+  let timeLeft = QUESTION_TIME;
+
+  function startTimer() {
+    timeLeft = QUESTION_TIME;
+    document.getElementById("timer-text").innerText = timeLeft;
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer-text").innerText = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+    });
+
+    feedback.innerText = `⏰ انتهى الوقت! ${q.explanation}`;
+    feedback.className = "feedback-box visible incorrect-fb";
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    
+    document.getElementById("question-meta").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+    document.getElementById("question-text").innerText = q.question;
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback-box");
+    feedback.className = "feedback-box";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function selectOption(selectedIdx) {
+    clearInterval(timerInterval);
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.className = "feedback-box visible correct-fb";
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.className = "feedback-box visible incorrect-fb";
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    clearInterval(timerInterval);
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
