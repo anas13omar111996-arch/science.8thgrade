@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - الدرس الثاني: الجدول الدوري وخصائص العناصر (15 سؤالاً)</title>
+  <style>
+    :root {
+      --primary-blue: #1d4ed8;
+      --light-blue: #0284c7;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --success-text: #15803d;
+      --error-bg: #fee2e2;
+      --error-border: #ef4444;
+      --error-text: #b91c1c;
+      --timer-bg: #fff7ed;
+      --timer-border: #fed7aa;
+      --timer-text: #c2410c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 720px;
+      padding: 35px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Header Styling */
+    .header-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .teacher-badge {
+      display: inline-block;
+      background-color: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 20px 0 25px 0;
+    }
+
+    /* Timer & Progress Bar Row */
+    .top-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .timer-badge {
+      background-color: var(--timer-bg);
+      border: 1px solid var(--timer-border);
+      color: var(--timer-text);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .progress-container {
+      flex-grow: 1;
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--light-blue);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question & Options */
+    .question-meta {
+      color: var(--light-blue);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 22px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: right;
+      padding: 14px 20px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      background-color: #ffffff;
+      font-size: 1rem;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--light-blue);
+      background-color: #f0f9ff;
+    }
+
+    .option-btn.correct {
+      background-color: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+      font-weight: 700;
+    }
+
+    .option-btn.incorrect {
+      background-color: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+    }
+
+    /* Feedback & Controls */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.visible { display: block; }
+    .feedback-box.correct-fb { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+    .feedback-box.incorrect-fb { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+
+    .controls-row {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 30px;
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Results Screen */
+    .results-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+
+    .score-display {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <!-- Header -->
+  <div class="header-section">
+    <h1 class="quiz-title">اختبار العلوم التفاعلي 🧪</h1>
+    <div class="quiz-subtitle">الدرس الثاني: الجدول الدوري وخصائص العناصر (الصف الثامن)</div>
+    <div class="teacher-badge">إعداد: الأستاذ أنس المزرعاوي</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen">
+    <div class="top-status-bar">
+      <div class="timer-badge">
+        ⏱️ <span id="timer-text">30</span> ثانية
+      </div>
+      <div class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="question-meta" class="question-meta">السؤال 1 من 15</div>
+    <div id="question-text" class="question-text"></div>
+    <div id="options-container" class="options-list"></div>
+    <div id="feedback-box" class="feedback-box"></div>
+
+    <div class="controls-row">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="results-screen">
+    <h2>أحسنت! انتهى الاختبار</h2>
+    <p>نتيجتك النهائية هي:</p>
+    <div id="final-score" class="score-display">0 / 15</div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة الدرس الثاني: الجدول الدوري وخصائص العناصر (الصف الثامن - 15 سؤالاً)
+  const questions = [
+    {
+      question: "رُتّبت العناصر في النسخة الأولى من الجدول الدوري للعالم الروسي ديميتري مندليف وفقًا لتزايد:",
+      options: ["أعدادها الذرية", "أعدادها الكتلية", "عدد إلكترونات التكافؤ", "أعداد النيوترونات"],
+      correct: 1,
+      explanation: "إجابة صحيحة! نشر العالم مندليف نسخته الأولى مُرتبًا العناصر وفقًا لتزايد أعدادها الكتلية، وترك فراغات للعناصر المجهولة متوقعًا خصائصها."
+    },
+    {
+      question: "في الجدول الدوري الحديث، رُتبت العناصر بناءً على تزايد:",
+      options: ["أعدادها الكتلية", "أعدادها الذرية", "حجومها الذرية", "كثافة عناصرها"],
+      correct: 1,
+      explanation: "إجابة صحيحة! رُتبت العناصر في الجدول الدوري الحديث وفقًا لتزايد أعدادها الذرية في دورات ومجموعات."
+    },
+    {
+      question: "تُسمّى العناصر التي تقع بين الفلزات واللافلزات وتجمع خصائص من كلتيهما مثل السيليكون (Si) والجرمانيوم (Ge) بـ:",
+      options: ["الغازات النبيلة", "العناصر الانتقالية", "أشباه الفلزات", "القلويات الأرضية"],
+      correct: 2,
+      explanation: "إجابة صحيحة! أشباه الفلزات هي عناصر تشترك في بعض خصائصها مع الفلزات وفي بعضها الآخر مع اللافلزات."
+    },
+    {
+      question: "يتكون الجدول الدوري الحديث من ....... دورات أفقية.",
+      options: ["5 دورات", "7 دورات", "12 دورة", "18 دورة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! رُتبت العناصر في الجدول الدوري الحديث في سبع (7) دورات أفقية مرقمة من 1 إلى 7."
+    },
+    {
+      question: "يتكوّن الجدول الدوري الحديث من ....... عمودًا رأسيًا تُسمّى المجموعات.",
+      options: ["7 أعمدة", "10 أعمدة", "14 عمودًا", "18 عمودًا"],
+      correct: 3,
+      explanation: "إجابة صحيحة! يتكون الجدول الدوري من 18 عمودًا رأسيًا، تُشكل كل عائلة أو مجموعة عناصر متشابهة كيميائيًا وفيزيائيًا."
+    },
+    {
+      question: "عدد مستويات الطاقة المشغولة بالإلكترونات حول نواة ذرة العنصر هو الذي يحدد رقم:",
+      options: ["المجموعة التي يقع فيها العنصر", "الدورة التي يقع فيها العنصر", "العدد الكتلي للعنصر", "شحنة الأيون المتكون"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تحديد رقم الدورة يعتمد مباشرة على عدد مستويات الطاقة الموجودة حول نواة ذرة العنصر."
+    },
+    {
+      question: "تُسمّى الإلكترونات الموجودة في مستوى الطاقة الخارجي لذرة العنصر بـ:",
+      options: ["إلكترونات التكافؤ", "البروتونات الموجبة", "النيوترونات المتعادلة", "الأيونات المستقرة"],
+      correct: 0,
+      explanation: "إجابة صحيحة! إلكترونات التكافؤ (Valence Electrons) هي إلكترونات الغلاف الخارجي وتحدد رقم مجموعة العنصر."
+    },
+    {
+      question: "تُعرف عناصر المجموعة الأولى في الجدول الدوري (مثل الليثيوم Li والصوديوم Na) باسم مجموعة:",
+      options: ["القلويات الأرضية", "القلويات", "الهالوجينات", "الغازات النبيلة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! عناصر المجموعة الأولى تحتوي على إلكترون تكافؤ واحد وتُسمى مجموعة القلويات."
+    },
+    {
+      question: "تُسمّى عناصر المجموعة الثانية في الجدول الدوري (مثل البريليوم Be والمغنيسيوم Mg) بـ:",
+      options: ["القلويات", "القلويات الأرضية (الترابية)", "العناصر الانتقالية", "أشباه الفلزات"],
+      correct: 1,
+      explanation: "إجابة صحيحة! عناصر المجموعة الثانية تُسمى مجموعة القلويات الأرضية وتحتوي على إلكترونين في مستواها الخارجي."
+    },
+    {
+      question: "عنصر الكربون (C) عدده الذري 6 وتوزيعه الإلكتروني (2, 4)، يقع في الجدول الدوري في:",
+      options: ["الدورة الثانية والمجموعة 14", "الدورة الرابعة والمجموعة الثانية", "الدورة الأولى والمجموعة 6", "الدورة الثالثة والمجموعة 4"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يمتلك مستويين للطاقة (الدورة 2) و 4 إلكترونات تكافؤ، فيقع في المجموعة 14 (أو 4A)."
+    },
+    {
+      question: "تتميز الغازات النبيلة (مثل الهيليوم Ne ،He ،Ar) بأنها عناصر مستقرة كيميائيًا لأن مستواها الخارجي:",
+      options: ["فارغ تمامًا من الإلكترونات", "ممتلئ أو يحتوي على 8 إلكترونات", "يحتوي على إلكترون واحد فقط", "غير مكتمل دائماً"],
+      correct: 1,
+      explanation: "إجابة صحيحة! سبب استقرار الغازات النبيلة وعدم ميلها للتفاعل هو إكتمال مستواها الخارجي بالإلكترونات."
+    },
+    {
+      question: "يتكوّن الأيون الموجب (Cation) عندما تقوم الذرة بـ:",
+      options: ["اكتساب إلكترونات", "فقدان إلكترون أو أكثر", "اكتساب نيوترونات", "فقدان بروتونات من النواة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يتكون الأيون الموجب عندما تفقد الذرة إلكترونًا أو أكثر لتحمل شحنة موجبة بقدر عدد الإلكترونات المفقودة."
+    },
+    {
+      question: "عندما تفقد ذرة الصوديوم (Na) الإلكترون الموجود في مستواها الخارجي لتشكل أيون الصوديوم (+Na)، يصبح توزيعها الإلكتروني مشابها لتوزيع ذرة:",
+      options: ["الآرغون Ar", "النيون Ne", "الهيليوم He", "الكلور Cl"],
+      correct: 1,
+      explanation: "إجابة صحيحة! ذرة الصوديوم (2, 8, 1) تفقد إلكترونًا واحدًا فيصبح توزيع الأيون (2, 8) مشابهاً لتوزيع ذرة النيون Ne المستقرة."
+    },
+    {
+      question: "يحدث تشكّل الأيونات السالبة (Anions) عادةً لذرات العناصر التي تقع في المجموعات:",
+      options: ["1 ، 2 ، 13", "3 ، 4 ، 5", "15 ، 16 ، 17", "18 فقط"],
+      correct: 2,
+      explanation: "إجابة صحيحة! عناصر المجموعات 15 و 16 و 17 تميل لاكتساب الإلكترونات حتى يكتمل مستواها الخارجي فتتكون الأيونات السالبة."
+    },
+    {
+      question: "تكتسب ذرة الكلور (Cl) التي توزيعهـا الإلكتروني (2, 8, 7) إلكترونًا واحدًا لتصبح أيون كلوريد (-Cl)، فيصبح توزيعها الإلكتروني مشابهاً لـ:",
+      options: ["ذرة النيون Ne", "ذرة الآرغون Ar", "ذرة الصوديوم Na", "ذرة الهيليوم He"],
+      correct: 1,
+      explanation: "إجابة صحيحة! عند اكتساب إلكترون يصبح التوزيع الإلكتروني لأيون الكلوريد (2, 8, 8) مشابهاً لتوزيع ذرة الآرغون Ar المستقرة."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let timerInterval;
+  const QUESTION_TIME = 30;
+  let timeLeft = QUESTION_TIME;
+
+  function startTimer() {
+    timeLeft = QUESTION_TIME;
+    document.getElementById("timer-text").innerText = timeLeft;
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer-text").innerText = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+    });
+
+    feedback.innerText = `⏰ انتهى الوقت! ${q.explanation}`;
+    feedback.className = "feedback-box visible incorrect-fb";
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    
+    document.getElementById("question-meta").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+    document.getElementById("question-text").innerText = q.question;
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback-box");
+    feedback.className = "feedback-box";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function selectOption(selectedIdx) {
+    clearInterval(timerInterval);
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.className = "feedback-box visible correct-fb";
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.className = "feedback-box visible incorrect-fb";
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    clearInterval(timerInterval);
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
