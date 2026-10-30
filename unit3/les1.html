@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - الدرس الأول: الضغط (15 سؤالاً)</title>
+  <style>
+    :root {
+      --primary-blue: #1d4ed8;
+      --light-blue: #0284c7;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --success-text: #15803d;
+      --error-bg: #fee2e2;
+      --error-border: #ef4444;
+      --error-text: #b91c1c;
+      --timer-bg: #fff7ed;
+      --timer-border: #fed7aa;
+      --timer-text: #c2410c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 720px;
+      padding: 35px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Header Styling */
+    .header-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .teacher-badge {
+      display: inline-block;
+      background-color: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 20px 0 25px 0;
+    }
+
+    /* Timer & Progress Bar Row */
+    .top-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .timer-badge {
+      background-color: var(--timer-bg);
+      border: 1px solid var(--timer-border);
+      color: var(--timer-text);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .progress-container {
+      flex-grow: 1;
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--light-blue);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question & Options */
+    .question-meta {
+      color: var(--light-blue);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 22px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: right;
+      padding: 14px 20px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      background-color: #ffffff;
+      font-size: 1rem;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--light-blue);
+      background-color: #f0f9ff;
+    }
+
+    .option-btn.correct {
+      background-color: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+      font-weight: 700;
+    }
+
+    .option-btn.incorrect {
+      background-color: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+    }
+
+    /* Feedback & Controls */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.visible { display: block; }
+    .feedback-box.correct-fb { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+    .feedback-box.incorrect-fb { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+
+    .controls-row {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 30px;
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Results Screen */
+    .results-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+
+    .score-display {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <!-- Header -->
+  <div class="header-section">
+    <h1 class="quiz-title">اختبار العلوم التفاعلي 🌊</h1>
+    <div class="quiz-subtitle">الدرس الأول: الضغط (الصف الثامن)</div>
+    <div class="teacher-badge">إعداد: الأستاذ أنس المزرعاوي</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen">
+    <div class="top-status-bar">
+      <div class="timer-badge">
+        ⏱️ <span id="timer-text">30</span> ثانية
+      </div>
+      <div class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="question-meta" class="question-meta">السؤال 1 من 15</div>
+    <div id="question-text" class="question-text"></div>
+    <div id="options-container" class="options-list"></div>
+    <div id="feedback-box" class="feedback-box"></div>
+
+    <div class="controls-row">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="results-screen">
+    <h2>أحسنت! انتهى الاختبار</h2>
+    <p>نتيجتك النهائية هي:</p>
+    <div id="final-score" class="score-display">0 / 15</div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة الدرس الأول: الضغط (الصف الثامن - 15 سؤالاً مستمدة من الكتاب المرفق)
+  const questions = [
+    {
+      question: "يُعرَّف الضغط (Pressure) بأنه:",
+      options: ["القوة الكلية المؤثرة في الجسم", "القوة العمودية المؤثرة لكل وحدة مساحة", "حجم السطح المؤثر فيه القوة", "مقاومة الأجسام للحركة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يُعرف الضغط بأنه القوة العمودية المؤثرة (F) لكل وحدة مساحة (A)، ويُحسب بالعلاقة P = F/A[cite: 53]."
+    },
+    {
+      question: "تُقاس وحدة الضغط (الباسكال Pa) بوحدات أساسية مكافئة لـ:",
+      options: ["N/m", "N/m²", "kg/m³", "N·m"],
+      correct: 1,
+      explanation: "إجابة صحيحة! عند قياس القوة (F) بالنيوتن والمساحة (A) بالمتر المربع، تكون وحدة الضغط N/m² والتي تُسمى الباسكال (Pa)[cite: 53]."
+    },
+    {
+      question: "يزداد الضغط الناشئ عن قوة معينة عندما:",
+      options: ["تزداد مساحة السطح", "تقل القوة المؤثرة", "تنقص مساحة السطح المتأثر", "تبقى المساحة ثابتة وتزيد سرعة الجسم"],
+      correct: 2,
+      explanation: "إجابة صحيحة! العلاقة بين الضغط والمساحة عكسية؛ بنقصان المساحة يزيد الضغط الناتج عن القوة[cite: 54]."
+    },
+    {
+      question: "تكون إطارات المركبات المخصصة للتنقل على الثلوج والرمال عريضة لـ:",
+      options: ["زيادة الضغط على الطريق", "تقليل المساحة التي يتوزع عليها الوزن", "تقليل الضغط الناشئ عن وزن المركبة ومنع غوصها", "زيادة سرعة الحركة"],
+      correct: 2,
+      explanation: "إجابة صحيحة! الإطارات العريضة تزيد المساحة فيقل الضغط الناشئ عن وزن المركبة، مما يقلل احتمالية غوصها في الرمال أو الثلوج[cite: 54]."
+    },
+    {
+      question: "الموائع (Fluids) تشمل:",
+      options: ["الأجسام الصلبة فقط", "السوائل والغازات", "السوائل الصلبة", "الغازات والمعادن الثقيلة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! نظراً لضعف قوى الترابط بين جسيمات السوائل والغازات وتمكنها من الجريان، يُطلق عليها اسم موائع[cite: 57]."
+    },
+    {
+      question: "ينشأ ضغط السائل على جدران الوعاء وقاعدته نتيجة لـ:",
+      options: ["استقرار جسيمات السائل وسكونها", "اصطدام جسيمات السائل المتحركة عشوائياً بالسطوح الصلبة", "تأثير الجاذبية الأرضية وحدها", "تبخر السائل المستمر"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تتحرك جسيمات السائل حركة مستمرة وعشوائية فتصطدم بالسطوح الملامسة لها وتؤثر بقوى عمودية تنشأ عنها الضغط[cite: 57]."
+    },
+    {
+      question: "يعتمد ضغط السائل عند نقطة داخله على:",
+      options: ["شكل الوعاء فقط", "عمق النقطة بالنسبة لسطح السائل وكثافته", "حجم الوعاء الكلي", "مساحة سطح الوعاء"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يعتمد ضغط السائل عند نقطة على عمق النقطة وكثافة السائل، ولا يعتمد على شكل الوعاء[cite: 58]."
+    },
+    {
+      question: "إذا كانت كثافة الزئبق تعادل تقريباً 13.6 ضعف كثافة الماء، فإن الضغط الناشئ عن الزئبق عند عمق 1m مقارنة بالماء عند العمق نفسه يكون:",
+      options: ["أقل بـ 13.6 مرة", "أكبر بمقدار 13.6 مرة", "مساوياً له تماماً", "يساوي الصفر"],
+      correct: 1,
+      explanation: "إجابة صحيحة! زيادة الكثافة تزيد الضغط طردياً، فالضغط عند عمق 1m في الزئبق أكبر بـ 13.6 مرة من الماء[cite: 58]."
+    },
+    {
+      question: "تنص قاعدة باسكال (Pascal's Principle) على أن المائع المححصور عندما يتعرض لضغط إضافي، فإن هذا الضغط:",
+      options: ["يتركز في نقطة التأثير فقط", "ينتقل إلى أجزاء المائع جميعها بالمقدار نفسه", "يتلاشى تدريجياً مع المسافة", "يزيد في القاع ويقل في الأعلى"],
+      correct: 1,
+      explanation: "إجابة صحيحة! نص قاعدة باسكال يوضح أن الضغط الإضافي ينتقل إلى أجزاء المائع المحصور جميعها بالمقدار نفسه[cite: 59]."
+    },
+    {
+      question: "تعتمد الرافعة الهيدروليكية في عملها بشكل أساسي على:",
+      options: ["مبدأ برنولي", "قاعدة باسكال", "قانون نيوتن الثاني", "التمدد الحراري للموائع"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الرافعة الهيدروليكية من أهم التطبيقات التي تعتمد في عملها على قاعدة باسكال[cite: 59]."
+    },
+    {
+      question: "في الرافعة الهيدروليكية، إذا كانت مساحة المكبس الكبير عشرة أضعاف مساحة المكبس الصغير، فإن القوة الناتجة على المكبس الكبير تكون:",
+      options: ["تساوي القوة المؤثرة في الصغير", "عشرة أضعاف القوة المؤثرة في الصغير", "عشر القوة المؤثرة في الصغير", "تساوي الصفر"],
+      correct: 1,
+      explanation: "إجابة صحيحة! العلاقة طردية بين القوى والمساحات، فإذا كانت المساحة 10 أضعاف تصبح القوة الناتجة 10 أضعاف القوة المؤثرة[cite: 60]."
+    },
+    {
+      question: "ينص مبدأ برنولي (Bernoulli's Principle) على أن:",
+      options: ["ضغط المائع يزداد عندما تزيد سرعته", "ضغط المائع يقل عندما تزيد سرعته", "سرعة المائع لا تتأثر بضغطه", "الضغط يتناسب طردياً مع مربع السرعة في السوائل الساكنة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! مبدأ برنولي يقر بأن ضغط المائع يقل عندما تزيد سرعته[cite: 61]."
+    },
+    {
+      question: "عند النفخ بقوة في الحيز بين بالونين معلقين رأسياً، فإنهما:",
+      options: ["يبتعدان عن بعضهما", "يقتربان بعضهما من بعض", "يرتفعان للأعلى بشكل مستقيم", "لا يتأثران نهائياً"],
+      correct: 1,
+      explanation: "إجابة صحيحة! زيادة سرعة الهواء بين البالونين تقلل ضغطه مقارنة بالخارج، فيتولد فرق ضغط يدفع كل بالون ليقتربا من بعضهما[cite: 61]."
+    },
+    {
+      question: "يُصمَّم جناح الطائرة بحيث يكون انحناؤه من الأعلى أكبر من الأسفل لكي تكون سرعة الهواء فوق الجناح:",
+      options: ["أقل من سرعته أسفله", "مساوية لسرعته أسفله تماماً", "أكبر من سرعته أسفله", "منعدمة"],
+      correct: 2,
+      explanation: "إجابة صحيحة! انحناء الأعلى الأكبر يجعل سرعة الهواء فوق الجناح أكبر من سرعته أسفله، مما ينشأ عنه فرق ضغط يولد قوة رفع للأعلى."
+    },
+    {
+      question: "وفقاً لمبدأ برنولي وتصميم جناح الطائرة، فإن قوة الرفع التي ترفع الطائرة للأعلى تنشأ بسبب:",
+      options: ["تساوي الضغط فوق الجناح وتحته", "الضغط المرتفع في الأسفل والضغط المنخفض في الأعلى", "الضغط المرتفع في الأعلى والضغط المنخفض في الأسفل", "وزن المحركات الكبير"],
+      correct: 1,
+      explanation: "إجابة صحيحة! سرعة الهواء الكبيرة في الأعلى تولد ضغطاً منخفضاً، وسرعته الأقل في الأسفل تولد ضغطاً مرتفعاً، فينشأ عنه قوة رفع نحو الأعلى."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let timerInterval;
+  const QUESTION_TIME = 30;
+  let timeLeft = QUESTION_TIME;
+
+  function startTimer() {
+    timeLeft = QUESTION_TIME;
+    document.getElementById("timer-text").innerText = timeLeft;
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer-text").innerText = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+    });
+
+    feedback.innerText = `⏰ انتهى الوقت! ${q.explanation}`;
+    feedback.className = "feedback-box visible incorrect-fb";
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    
+    document.getElementById("question-meta").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+    document.getElementById("question-text").innerText = q.question;
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback-box");
+    feedback.className = "feedback-box";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function selectOption(selectedIdx) {
+    clearInterval(timerInterval);
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.className = "feedback-box visible correct-fb";
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.className = "feedback-box visible incorrect-fb";
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    clearInterval(timerInterval);
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
