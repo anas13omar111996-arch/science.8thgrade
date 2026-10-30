@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - الموارد الطبيعية (15 سؤالاً)</title>
+  <style>
+    :root {
+      --primary-blue: #1d4ed8;
+      --light-blue: #0284c7;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --success-text: #15803d;
+      --error-bg: #fee2e2;
+      --error-border: #ef4444;
+      --error-text: #b91c1c;
+      --timer-bg: #fff7ed;
+      --timer-border: #fed7aa;
+      --timer-text: #c2410c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 720px;
+      padding: 35px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Header Styling */
+    .header-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .teacher-badge {
+      display: inline-block;
+      background-color: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 20px 0 25px 0;
+    }
+
+    /* Timer & Progress Bar Row */
+    .top-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .timer-badge {
+      background-color: var(--timer-bg);
+      border: 1px solid var(--timer-border);
+      color: var(--timer-text);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .progress-container {
+      flex-grow: 1;
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--light-blue);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question & Options */
+    .question-meta {
+      color: var(--light-blue);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 22px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: right;
+      padding: 14px 20px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      background-color: #ffffff;
+      font-size: 1rem;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--light-blue);
+      background-color: #f0f9ff;
+    }
+
+    .option-btn.correct {
+      background-color: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+      font-weight: 700;
+    }
+
+    .option-btn.incorrect {
+      background-color: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+    }
+
+    /* Feedback & Controls */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.visible { display: block; }
+    .feedback-box.correct-fb { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+    .feedback-box.incorrect-fb { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+
+    .controls-row {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 30px;
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Results Screen */
+    .results-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+
+    .score-display {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <!-- Header -->
+  <div class="header-section">
+    <h1 class="quiz-title">اختبار العلوم التفاعلي 💎</h1>
+    <div class="quiz-subtitle">الدرس الثاني: الموارد الطبيعية (الصف الثامن)</div>
+    <div class="teacher-badge">إعداد: أ. أنس المزرعاوي</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen">
+    <div class="top-status-bar">
+      <div class="timer-badge">
+        ⏱️ <span id="timer-text">30</span> ثانية
+      </div>
+      <div class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="question-meta" class="question-meta">السؤال 1 من 15</div>
+    <div id="question-text" class="question-text"></div>
+    <div id="options-container" class="options-list"></div>
+    <div id="feedback-box" class="feedback-box"></div>
+
+    <div class="controls-row">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="results-screen">
+    <h2>أحسنت! انتهى الاختبار</h2>
+    <p>نتيجتك النهائية هي:</p>
+    <div id="final-score" class="score-display">0 / 15</div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة درس الموارد الطبيعية (الصف الثامن - 15 سؤالاً مستمدة حصرياً من الملف المرفق)
+  const questions = [
+    {
+      question: "الموارد الطبيعية التي يمكن الحصول عليها من الغلاف الحيوي في البيئة (مثل النباتات والحيوانات) تسمى:",
+      options: ["الموارد غير الحيوية", "الموارد الحيوية (Biotic Resources)", "الموارد المعدنية", "الموارد المصنعة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الموارد الحيوية هي الموارد الطبيعية التي يمكن الحصول عليها من الغلاف الحيوي مثل النباتات والحيوانات[cite: 75]."
+    },
+    {
+      question: "الموارد التي يمكن الحصول عليها من الأغلفة الأخرى غير الغلاف الحيوي مثل الطاقة الشمسية وطاقة الرياح والصخور تُعرف بـ:",
+      options: ["الموارد الحيوية", "الموارد غير الحيوية (Abiotic Resources)", "الموارد المتجددة فقط", "الوقود الأحفوري"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الموارد غير الحيوية هي التي تُحصل من الأغلفة الأخرى مثل الطاقة الشمسية والرياح والمعادن[cite: 75]."
+    },
+    {
+      question: "تُعرّف الموارد المعدنية (Mineral Resources) بأنها من الموارد الطبيعية:",
+      options: ["المتجددة الدائمة", "غير المتجددة والثمينة", "الحيوية النباتية", "المصنعة مخبرياً"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الموارد المعدنية هي موارد طبيعية غير متجددة ثمينة تكونت على سطح الأرض أو داخلها بعمليات جيولوجية[cite: 76]."
+    },
+    {
+      question: "ما السبب الأساسي وراء قابلية الموارد المعدنية للاستنزاف؟",
+      options: ["كثرة تدويرها وصهرها", "الاستهلاك المتزايد من الدول والزيادة السكانية الكبيرة", "تكونها السريع في الطبيعة", "عدم حاجتك لتلك المعادن في الصناعة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! كميتها محدودة وقابلة للاستنزاف بسبب استهلاك الدول والازدياد الكبير في عدد السكان[cite: 76]."
+    },
+    {
+      question: "يُستخدم معدن الفوسفات بشكل رئيسي في الصناعات الآتية:",
+      options: ["صناعة الزجاج", "صناعة الأسمدة", "صناعة الأسمنت والديكورات", "صناعة الساعات والحلي"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يُستخدم الفوسفات في صناعة الأسمدة[cite: 76]."
+    },
+    {
+      question: "أي من العمليات الجيولوجية الآتية ترتبط بحدود الصفائح، ومن أمثلتها انتشار النحاس على امتداد جبال الأنديز؟",
+      options: ["عمليات الترسيب الكيميائي", "النشاط البركاني (Volcanic Activity)", "عمليات التجوية الكيميائية", "عمليات الترشيح"],
+      correct: 1,
+      explanation: "إجابة صحيحة! النشاط البركاني مرتبط بحدود الصفائح مثل انتشار النحاس على امتداد جبال الأنديز[cite: 78]."
+    },
+    {
+      question: "يتكون معدن الماس الطبيعي في أعماق الأرض داخل صخر ناري خاص يُسمى:",
+      options: ["صخر الغرانيت", "صخر البازلت", "صخر الكمبرلايت (Kimberlite)", "صخر الفحم الحجري"],
+      correct: 2,
+      explanation: "إجابة صحيحة! يوجد الماس في صخور الكمبرلايت وهو صخر ناري يتكون في أعماق الأرض[cite: 78]."
+    },
+    {
+      question: "تتكون بعض الموارد المعدنية (مثل معدن الجبس ومعدن الهاليت) نتيجة لـ:",
+      options: ["النشاط البركاني والماغما", "الترسيب الكيميائي وتبخر مياه البحار في المناطق الجافة", "تحول الفحم الحجري بالحرارة", "الانصهار العالي"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تتكون الموارد المعدنية في أثناء الترسيب الكيميائي للصخور نتيجة تبخر مياه البحار في المناطق الجافة[cite: 78]."
+    },
+    {
+      question: "معدن الغرافيت الذي يتكون نتيجة ارتفاع درجات الحرارة والضغط (عمليات التحول) ينشأ أصلاً من تحول:",
+      options: ["الرمل الزجاجي", "الفحم الحجري", "صخر الكمبرلايت", "الحجر الجيري النقي"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الغرافيت يتكون من تحول الفحم الحجري بفعل عمليات التحول[cite: 80]."
+    },
+    {
+      question: "على الرغم من أن الماس والغرافيت يتكونان من العنصر نفسه (الكربون)، إلا أن الماس أقسى المعادن بينما الغرافيت معدن هش، ويزعج السبب في ذلك إلى:",
+      options: ["اختلاف شكل الشبكة البلورية التي تترتب بها الذرات", "وجود شوائب حديدية في الغرافيت", "كون الماس صخراً نارياً والغرافيت رسوبياً", "تعرض الماس للبرودة الشديدة"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يرجع اختلاف خصائص الماس والغرافيت رغم اتحاد العنصر إلى اختلاف شكل الشبكة البلورية لتَّرتب الذرات[cite: 80]."
+    },
+    {
+      question: "يُستخلص معدن الهيماتيت الذي يُصنع منه الحديد في الأردن من منطقة:",
+      options: ["وادي ضانا", "مغارة وردة في عجلون", "منطقة العقبة", "وادي أبو خشيبة"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يوجد معدن الهيماتيت المُستخلص منه الحديد في مغارة وردة في منطقة عجلون."
+    },
+    {
+      question: "أين يوجد معدن الملاكيت الذي يُستخلص منه النحاس المستخدم في الصناعات الكهربائية في الأردن؟",
+      options: ["وادي ضانا، ووادي أبو خشيبة، وخربة النحاس", "عجلون ومغارة وردة", "شمال عمان فقط", "خليج العقبة وحدها"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يُستخلص النحاس من معدن الملاكيت في وادي ضانا ووادي أبو خشيبة وخربة النحاس."
+    },
+    {
+      question: "كيف يتواجد معدن الذهب في منطقة وادي أبو خشيبة شمال خليج العقبة بالأردن؟",
+      options: ["على شكل مركبات كيميائية مع الكلور", "على شكل حر، أو على شكل حبيبي أو صفائحي", "داخل صخور الكمبرلايت العميقة فقط", "على شكل غازات منطلقة من البراكين"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يوجد معدن الذهب في وادي أبو خشيبة شمال خليج العقبة على شكل حر، أو على شكل حبيبي أو صفائحي."
+    },
+    {
+      question: "معدن الفلسبار الذي يدخل في صناعة الزجاج والخزف والصابون والأسنان الصناعية يوجد جنوب الأردن في منطقة:",
+      options: ["عجلون", "العقبة", "إربد", "المفرق"],
+      correct: 1,
+      explanation: "إجابة صحيحة! يوجد معدن الفلسبار جنوب الأردن في منطقة العقبة."
+    },
+    {
+      question: "تُسمى الطريقة غير المباشرة لاستكشاف المعادن باستخدام الأقمار الصناعية لالتقاط صور وتحليلها ببرامج حاسوبية بـ:",
+      options: ["الاستشعار عن بعد (Remote Sensing)", "التعدين السطحي المباشر", "التحول المعدني", "الترسيب الكيميائي"],
+      correct: 0,
+      explanation: "إجابة صحيحة! الاستشعار عن بعد هي الطريقة غير المباشرة للاستكشاف باستخدام الأقمار الصناعية وتحليل الصور برمجياً[cite: 76]."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let timerInterval;
+  const QUESTION_TIME = 30;
+  let timeLeft = QUESTION_TIME;
+
+  function startTimer() {
+    timeLeft = QUESTION_TIME;
+    document.getElementById("timer-text").innerText = timeLeft;
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer-text").innerText = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+    });
+
+    feedback.innerText = `⏰ انتهى الوقت! ${q.explanation}`;
+    feedback.className = "feedback-box visible incorrect-fb";
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    
+    document.getElementById("question-meta").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+    document.getElementById("question-text").innerText = q.question;
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback-box");
+    feedback.className = "feedback-box";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function selectOption(selectedIdx) {
+    clearInterval(timerInterval);
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.className = "feedback-box visible correct-fb";
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.className = "feedback-box visible incorrect-fb";
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    clearInterval(timerInterval);
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
