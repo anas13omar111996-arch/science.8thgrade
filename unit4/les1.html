@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار العلوم التفاعلي - الصفائح التكتونية وحركتها (15 سؤالاً)</title>
+  <style>
+    :root {
+      --primary-blue: #1d4ed8;
+      --light-blue: #0284c7;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --success-text: #15803d;
+      --error-bg: #fee2e2;
+      --error-border: #ef4444;
+      --error-text: #b91c1c;
+      --timer-bg: #fff7ed;
+      --timer-border: #fed7aa;
+      --timer-text: #c2410c;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 720px;
+      padding: 35px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Header Styling */
+    .header-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .teacher-badge {
+      display: inline-block;
+      background-color: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 5px 18px;
+      border-radius: 20px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 20px 0 25px 0;
+    }
+
+    /* Timer & Progress Bar Row */
+    .top-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .timer-badge {
+      background-color: var(--timer-bg);
+      border: 1px solid var(--timer-border);
+      color: var(--timer-text);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .progress-container {
+      flex-grow: 1;
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--light-blue);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question & Options */
+    .question-meta {
+      color: var(--light-blue);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 22px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: right;
+      padding: 14px 20px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      background-color: #ffffff;
+      font-size: 1rem;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--light-blue);
+      background-color: #f0f9ff;
+    }
+
+    .option-btn.correct {
+      background-color: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+      font-weight: 700;
+    }
+
+    .option-btn.incorrect {
+      background-color: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+    }
+
+    /* Feedback & Controls */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.visible { display: block; }
+    .feedback-box.correct-fb { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+    .feedback-box.incorrect-fb { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+
+    .controls-row {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      padding: 12px 30px;
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .next-btn:hover { opacity: 0.9; }
+
+    /* Results Screen */
+    .results-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+
+    .score-display {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <!-- Header -->
+  <div class="header-section">
+    <h1 class="quiz-title">اختبار العلوم التفاعلي 🌍</h1>
+    <div class="quiz-subtitle">الدرس الحادي عشر: الصفائح التكتونية وحركتها (الصف الثامن)</div>
+    <div class="teacher-badge">إعداد: الأستاذ أنس المزرعاوي</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen">
+    <div class="top-status-bar">
+      <div class="timer-badge">
+        ⏱️ <span id="timer-text">30</span> ثانية
+      </div>
+      <div class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div id="question-meta" class="question-meta">السؤال 1 من 15</div>
+    <div id="question-text" class="question-text"></div>
+    <div id="options-container" class="options-list"></div>
+    <div id="feedback-box" class="feedback-box"></div>
+
+    <div class="controls-row">
+      <button id="next-btn" class="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="result-screen" class="results-screen">
+    <h2>أحسنت! انتهى الاختبار</h2>
+    <p>نتيجتك النهائية هي:</p>
+    <div id="final-score" class="score-display">0 / 15</div>
+    <button class="next-btn" style="display:inline-block;" onclick="restartQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // أسئلة الدرس الحادي عشر: الصفائح التكتونية وحركتها (15 سؤالاً مستمدة من الكتاب المدرسي)
+  const questions = [
+    {
+      question: "تشير نظرية تكتونية الصفائح (Plate Tectonic Theory) إلى أن الغلاف الصخري مقسم إلى أجزاء مختلفة في الحجم والشكل تُسمى:",
+      options: ["التيارات الحملية", "الصفائح التكتونية", "النطاق اللدن", "الأحاديث البركانية"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تنص نظرية تكتونية الصفائح على أن الغلاف الصخري مقسم إلى صفائح تكتونية تتحرك فوق الغلاف اللدن[cite: 69]."
+    },
+    {
+      question: "تتحرك الصفائح التكتونية بالنسبة لبعضها البعض فوق طبقة تُعرف بـ:",
+      options: ["القشرة الأرضية", "الغلاف اللدن (Asthenosphere)", "اللب الخارجي", "الستار السفلي"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تتحرك الصفائح التكتونية باستمرار فوق الغلاف اللدن[cite: 69]."
+    },
+    {
+      question: "تتميز الصف بأنها تتكون أساساً من صخور البازلت وتبلغ كثافتها نحو 3 g/cm³، وهي:",
+      options: ["الصفائح القارية", "الصفائح المحيطية", "الصفائح التحويلية", "الصفائح البنائية"],
+      correct: 1,
+      explanation: "إجابة صحيحة! الصفائح المحيطية هي التي يتكون جزءها العلوي من القشرة المحيطية وصخورها البازلت بكثافة 3 g/cm³[cite: 70]."
+    },
+    {
+      question: "تبلغ كثافة الصفائح القارية نحو 2.7 g/cm³ وتتكون صخورها بشكل أساسي من:",
+      options: ["البازلت", "الغرانيت", "الرخام", "الحجر الجيري"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تتكون صخور الصفائح القارية بشكل أساسي من صخور الغرانيت بكثافة 2.7 g/cm³[cite: 70]."
+    },
+    {
+      question: "عند الحدود المتباعدة (Divergent Boundaries)، عندما تتباعد صفيحتان عن بعضهما في القارات، تتكون في البداية:",
+      options: ["سلاسل جبلية ضخمة", "أخدود بحري عميق", "وادٍ متصدع", "حزام زلزالي محيطي"],
+      correct: 2,
+      explanation: "إجابة صحيحة! تمدد الغلاف الصخري وتقوسه وتشقيقه يؤدي إلى تكوين وادٍ متصدع[cite: 72]."
+    },
+    {
+      question: "نتج البحر الأحمر من تباعد صفيحة رئيسية عن صفيحة أخرى، هما:",
+      options: ["الصفيحة العربية والصفيحة الإفريقية", "صفيحة أوراسيا وصفيحة الهند", "صفيحة أمريكا الشمالية وصفيحة الهادي", "صفيحة أستراليا وصفيحة القارة القطبية"],
+      correct: 0,
+      explanation: "إجابة صحيحة! نتج البحر الأحمر كبحر ضيق نتيجة تباعد الصفيحة العربية عن الصفيحة الإفريقية[cite: 72]."
+    },
+    {
+      question: "تنتج حدود الطرح (Subduction Boundaries) من تقارب صفيحة محيطية من صفيحة أخرى (محيطية أو قارية)، حيث تغطس الصفيحة:",
+      options: ["الأقل عمراً والأقل كثافة", "الأكبر عمراً والأكثر كثافة", "دائماً الصفيحة القارية", "الأخف وزناً بغض النظر عن العمر"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تغطس الصفيحة المحيطية الأكثر كثافة والأكبر عمراً تحت الصفيحة الأخرى الأقل كثافة[cite: 73, 74]."
+    },
+    {
+      question: "يُسمى الوادي الضيق والعميق الذي يتكون في منطقة غطس صفيحة تحت أخرى بـ:",
+      options: ["الصدع التحويلي", "الأخدود البحري", "الوادي المتصدع", "السهل الفيضي"],
+      correct: 1,
+      explanation: "إجابة صحيحة! ينشأ الأخدود البحري نتيجة انثناء الصفيحة المحيطية وغطسها أسفل الصفيحة الأخرى[cite: 73]."
+    },
+    {
+      question: "تنتج سلاسل الجبال الضخمة مثل جبال الهيملايا نتيجة حدود:",
+      options: ["متباعدة", "تحويلية", "تصادم بين صفيحتين قاريتين", "طرح بين صفيحة محيطية وقارية"],
+      correct: 2,
+      explanation: "إجابة صحيحة! تنتج حدود التصادم عند تقارب صفيحة قارية من صفيحة قارية أخرى وتكوين سلاسل جبلية مثل الهيملايا[cite: 74]."
+    },
+    {
+      question: "تُسمى الحدود التي تتحرك فيها صفيحتان بجانب بعضهما أفقياً في اتجاهين متعاكسين بـ:",
+      options: ["الحدود المتباعدة", "الحدود المتقاربة", "الحدود التحويلية (الجانبية)", "حدود التصادم"],
+      correct: 2,
+      explanation: "إجابة صحيحة! الحدود التحويلية تتحرك فيها الصفيحتان أفقياً باتجاهين متعاكسين على طول صدع فاصل[cite: 74]."
+    },
+    {
+      question: "من الأمثلة الشهيرة على الحدود التحويلية والجانبية:",
+      options: ["صدع البحر الميت التحويلي", "جبال الهيملايا", "أخدود ماريانا", "محور البحر الأحمر"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يُعد صدع البحر الميت التحويلي مثالاً رئيسياً على الحدود التحويلية[cite: 74]."
+    },
+    {
+      question: "لماذا تُسمى الحدود المتباعدة أحياناً بـ 'الحدود البناءة'؟",
+      options: ["لأنها تدمر القشرة الأرضية", "لأنها تبني غلافاً صخرياً محيطياً جديداً", "لأنها لا تسبب زلازل", "لأنها تكون الجبال القارية العالية"],
+      correct: 1,
+      explanation: "إجابة صحيحة! تُسمى الحدود المتباعدة بناءة لأن اندفاع الماغما يبني قشرة محيطية وغلافاً صخرياً محيطياً جديداً."
+    },
+    {
+      question: "يتركز معظم النشاط الزلزالي والبركاني في العالم على امتداد حزام يحيط بصفيحة المحيط الهادي يُعرف بـ:",
+      options: ["حزام النار الهادئ (حزام المحيط الهادي الناري)", "الحزام الأطلسي الكبير", "نطاق الانهيار الإفريقي", "درع القارات القديم"],
+      correct: 0,
+      explanation: "إجابة صحيحة! يُعرف معظم النشاط الزلزالي والبركاني المتمركز حول صفيحة المحيط الهادي بحزام المحيط الهادي الناري."
+    },
+    {
+      question: "يتعرض الأردن باستمرار لمجموعة من الزلازل بسبب حركة الصفائح على طول:",
+      options: ["صدع البحر الميت التحويلي", "الحدود المتباعدة في البحر الأحمر", "منطقة الطرح في المتوسط", "فالق الأردن العظيم التصادمى"],
+      correct: 0,
+      explanation: "إجابة صحيحة! تعود الزلازل التي يتعرض لها الأردن للحركة المستمرة على طول صدع البحر الميت التحويلي."
+    },
+    {
+      question: "أي من الحدود الآتية يُطلق عليها اسم 'الحدود المحافظة'؟",
+      options: ["الحدود المتباعدة", "الحدود المتقاربة", "حدود الطرح", "الحدود التحويلية"],
+      correct: 3,
+      explanation: "إجابة صحيحة! تُسمى الحدود التحويلية بالحدود المحافظة لأنها لا تُستحدث فيها قشرة جديدة ولا تستهلك قشرة قديمة."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let timerInterval;
+  const QUESTION_TIME = 30;
+  let timeLeft = QUESTION_TIME;
+
+  function startTimer() {
+    timeLeft = QUESTION_TIME;
+    document.getElementById("timer-text").innerText = timeLeft;
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer-text").innerText = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+    });
+
+    feedback.innerText = `⏰ انتهى الوقت! ${q.explanation}`;
+    feedback.className = "feedback-box visible incorrect-fb";
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    
+    document.getElementById("question-meta").innerText = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+    const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+    document.getElementById("question-text").innerText = q.question;
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    const feedback = document.getElementById("feedback-box");
+    feedback.className = "feedback-box";
+    feedback.innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function selectOption(selectedIdx) {
+    clearInterval(timerInterval);
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option-btn");
+    const feedback = document.getElementById("feedback-box");
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.correct) {
+        btn.classList.add("correct");
+      }
+      if (idx === selectedIdx && idx !== q.correct) {
+        btn.classList.add("incorrect");
+      }
+    });
+
+    if (selectedIdx === q.correct) {
+      score++;
+      feedback.innerText = q.explanation;
+      feedback.className = "feedback-box visible correct-fb";
+    } else {
+      feedback.innerText = `إجابة خاطئة. ${q.explanation}`;
+      feedback.className = "feedback-box visible incorrect-fb";
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    clearInterval(timerInterval);
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz-screen").style.display = "block";
+    document.getElementById("result-screen").style.display = "none";
+    loadQuestion();
+  }
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
